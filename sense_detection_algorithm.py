@@ -32,7 +32,10 @@ __revision__ = '$Format:%H$'
 
 import os
 import re
+import os
+import inspect
 import subprocess
+from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtCore import QCoreApplication
 from qgis.core import (QgsSettings,
                        QgsProcessingAlgorithm,
@@ -179,11 +182,7 @@ class SenseRemoteDetectionAlgorithm(QgsProcessingAlgorithm):
         # force save shpfile
         filename, file_extension = os.path.splitext(sinkFile)
         if file_extension != '.shp':
-            sinkFile = filename + ".shp"
-        QgsMessageLog.logMessage('sink file = {}'.format(sinkFile), self.LOGNAME)
-        
-        if file_extension == '.gpkg':
-            feedback.reportError("输出临时文件的格式错误，请修改Options->Processing->General->Default output vector layer extension的值为shp")
+            feedback.reportError("输出文件的格式错误，请设置为shapefile格式输出。如果是临时文件，请修改Options->Processing->General->Default output vector layer extension的值为shp")
             return {self.OUTPUT: sinkFile}
             
         cmd = [sdk_exe, 
@@ -261,3 +260,8 @@ class SenseRemoteDetectionAlgorithm(QgsProcessingAlgorithm):
 
     def createInstance(self):
         return SenseRemoteDetectionAlgorithm()
+
+    def icon(self):
+        cmd_folder = os.path.split(inspect.getfile(inspect.currentframe()))[0]
+        icon = QIcon(os.path.join(os.path.join(cmd_folder, 'logo.png')))
+        return icon

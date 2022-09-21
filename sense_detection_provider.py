@@ -30,7 +30,10 @@ __copyright__ = '(C) 2022 by atlas@SenseTime'
 
 __revision__ = '$Format:%H$'
 
+import os
+import inspect
 from qgis.core import QgsProcessingProvider
+from qgis.PyQt.QtGui import QIcon
 from .sense_detection_algorithm import SenseRemoteDetectionAlgorithm
 
 
@@ -79,7 +82,9 @@ class SenseRemoteDetectionProvider(QgsProcessingProvider):
         Should return a QIcon which is used for your provider inside
         the Processing toolbox.
         """
-        return QgsProcessingProvider.icon(self)
+        cmd_folder = os.path.split(inspect.getfile(inspect.currentframe()))[0]
+        icon = QIcon(os.path.join(os.path.join(cmd_folder, 'logo.png')))
+        return icon
 
     def longName(self):
         """
