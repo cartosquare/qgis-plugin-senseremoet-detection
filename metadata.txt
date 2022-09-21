@@ -6,7 +6,7 @@
 name=SenseRemote Detection
 qgisMinimumVersion=3.0
 description=AI detection algorithms for remote sensing images.
-version=0.1
+version=0.1.0
 author=xuxiang@sensetime.com
 email=xuxiang@sensetime.com
 

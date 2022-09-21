@@ -171,7 +171,7 @@ class SenseRemoteDetectionAlgorithm(QgsProcessingAlgorithm):
         QgsMessageLog.logMessage('output layer = {}'.format(sinkFile), self.LOGNAME)
         
         #sdk_dir = os.path.split(os.path.realpath(__file__))[0]
-        QgsMessageLog.logMessage('sdk directory = {}'.format(sdk_dir, self.LOGNAME))
+        QgsMessageLog.logMessage('sdk directory = {}'.format(sdk_dir), self.LOGNAME)
 
         store_sdk_info(sdk_dir, model_file)
         sdk_exe = os.path.join(sdk_dir, 'sl.seg.predict.exe')
@@ -180,8 +180,12 @@ class SenseRemoteDetectionAlgorithm(QgsProcessingAlgorithm):
         filename, file_extension = os.path.splitext(sinkFile)
         if file_extension != '.shp':
             sinkFile = filename + ".shp"
-        QgsMessageLog.logMessage('sink file = {}'.format(sinkFile, self.LOGNAME))
+        QgsMessageLog.logMessage('sink file = {}'.format(sinkFile), self.LOGNAME)
         
+        if file_extension == '.gpkg':
+            feedback.reportError("输出临时文件的输出格式错误，请修改Options->Processing->General->Default output vector layer extension的值为shp")
+            return {self.OUTPUT: sinkFile}
+            
         cmd = [sdk_exe, 
             "-m", model_file,
             "-i", sourceFile,
