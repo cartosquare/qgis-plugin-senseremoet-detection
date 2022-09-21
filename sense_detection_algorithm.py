@@ -183,7 +183,7 @@ class SenseRemoteDetectionAlgorithm(QgsProcessingAlgorithm):
         QgsMessageLog.logMessage('sink file = {}'.format(sinkFile), self.LOGNAME)
         
         if file_extension == '.gpkg':
-            feedback.reportError("输出临时文件的输出格式错误，请修改Options->Processing->General->Default output vector layer extension的值为shp")
+            feedback.reportError("输出临时文件的格式错误，请修改Options->Processing->General->Default output vector layer extension的值为shp")
             return {self.OUTPUT: sinkFile}
             
         cmd = [sdk_exe, 
