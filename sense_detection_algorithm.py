@@ -101,7 +101,7 @@ class SenseRemoteDetectionAlgorithm(QgsProcessingAlgorithm):
     UI_ALG_NAME = 'image segmentation'
     UI_ALG_GROUP = 'AI Algorithms'
 
-    UI_ERROR_OUTPUT_FORMAT = 'file format of output file error, please set shapefile output. If you are using temp file output, please modify the value of Options->Processing->General->Default output vector layer extension to shp'
+    UI_ERROR_OUTPUT_FORMAT = 'file format of output file error, please set shapefile output. If you are using temp file output, please modify the value of Setting->Options->Processing->General->Default output vector layer extension to shp'
     TRANS = {
         UI_INPUT: {
             'en': UI_INPUT,
@@ -129,7 +129,7 @@ class SenseRemoteDetectionAlgorithm(QgsProcessingAlgorithm):
         },
         UI_ERROR_OUTPUT_FORMAT: {
             'en': UI_ERROR_OUTPUT_FORMAT,
-            'zh': '输出文件的格式错误，请设置为shapefile格式输出。如果是临时文件，请修改Options->Processing->General->Default output vector layer extension的值为shp'
+            'zh': '输出文件的格式错误，请设置为shapefile格式输出。如果是临时文件，请修改设置->选项->常规->默认输出矢量图层扩展名的值为shp'
         },
         UI_ALG_NAME: {
             'en': UI_ALG_NAME,
