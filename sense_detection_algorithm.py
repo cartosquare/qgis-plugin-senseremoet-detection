@@ -36,7 +36,7 @@ import os
 import inspect
 import subprocess
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtCore import QCoreApplication
+from qgis.PyQt.QtCore import QSettings
 from qgis.core import (QgsSettings,
                        QgsProcessingAlgorithm,
                        QgsMessageLog,
@@ -56,7 +56,6 @@ def read_sdk_info():
   sdk_dir = s.value("st/sdk_dir", "")
   sdk_model  = s.value("st/sdk_model", "")
   return sdk_dir, sdk_model
-
 
 class SenseRemoteDetectionAlgorithm(QgsProcessingAlgorithm):
     """
@@ -93,7 +92,58 @@ class SenseRemoteDetectionAlgorithm(QgsProcessingAlgorithm):
 
     LOGNAME = 'SenseTime'
 
+    UI_INPUT = 'Input Imagery'
+    UI_SDK_LOCATION = 'SDK Location'
+    UI_MODEL = 'Model'
+    UI_DEVICE = 'Device'
+    UI_RESAMPLE = 'Resample Resolution'
+    UI_OUTPUT = 'Output'
+    UI_ALG_NAME = 'image segmentation'
+    UI_ALG_GROUP = 'AI Algorithms'
+
+    UI_ERROR_OUTPUT_FORMAT = 'file format of output file error, please set shapefile output. If you are using temp file output, please modify the value of Options->Processing->General->Default output vector layer extension to shp'
+    TRANS = {
+        UI_INPUT: {
+            'en': UI_INPUT,
+            'zh': '输入文件'
+        },
+        UI_SDK_LOCATION: {
+            'en': UI_SDK_LOCATION,
+            'zh': 'SDK 目录'
+        },
+        UI_MODEL: {
+            'en': UI_MODEL,
+            'zh': '模型'
+        },
+        UI_DEVICE: {
+            'en': UI_DEVICE,
+            'zh': '设备'
+        },
+        UI_RESAMPLE: {
+            'en': UI_RESAMPLE,
+            'zh': '重采样分辨率'
+        },
+        UI_OUTPUT: {
+            'en': UI_OUTPUT,
+            'zh': '输出文件'
+        },
+        UI_ERROR_OUTPUT_FORMAT: {
+            'en': UI_ERROR_OUTPUT_FORMAT,
+            'zh': '输出文件的格式错误，请设置为shapefile格式输出。如果是临时文件，请修改Options->Processing->General->Default output vector layer extension的值为shp'
+        },
+        UI_ALG_NAME: {
+            'en': UI_ALG_NAME,
+            'zh': '大模型分割'
+        },
+        UI_ALG_GROUP: {
+            'en': UI_ALG_GROUP,
+            'zh': 'AI 算法'
+        }
+    }
+
     def initAlgorithm(self, config):
+        self.locale = QSettings().value('locale/userLocale')[0:2]
+
         """
         Here we define the inputs and output of the algorithm, along
         with some other properties.
@@ -101,7 +151,7 @@ class SenseRemoteDetectionAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterRasterLayer(
                 self.INPUT,
-                self.tr('输入文件')
+                self.tr(self.UI_INPUT)
             )
         )
 
@@ -109,7 +159,7 @@ class SenseRemoteDetectionAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFile(
                 self.SDK_DIR,
-                self.tr('SDK 目录'),
+                self.tr(self.UI_SDK_LOCATION),
                 QgsProcessingParameterFile.Folder,
                 '',
                 sdk_dir
@@ -119,7 +169,7 @@ class SenseRemoteDetectionAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFile(
                 self.MODEL_FILE,
-                self.tr('模型'),
+                self.tr(self.UI_MODEL),
                 QgsProcessingParameterFile.File,
                 '',
                 sdk_model
@@ -129,7 +179,7 @@ class SenseRemoteDetectionAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterEnum(
                 self.DEVICE,
-                self.tr('设备'),
+                self.tr(self.UI_DEVICE),
                 self.DEVICE_OPTIONS,
                 False,
                 0
@@ -139,7 +189,7 @@ class SenseRemoteDetectionAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterNumber(
                 self.RESAMPLE,
-                self.tr('重采样分辨率'),
+                self.tr(self.UI_RESAMPLE),
                  QgsProcessingParameterNumber.Double,
                  None,
                  True
@@ -149,7 +199,7 @@ class SenseRemoteDetectionAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterVectorDestination(
                 self.OUTPUT,
-                self.tr('输出文件')
+                self.tr(self.UI_OUTPUT)
             )
         )
 
@@ -182,7 +232,7 @@ class SenseRemoteDetectionAlgorithm(QgsProcessingAlgorithm):
         # force save shpfile
         filename, file_extension = os.path.splitext(sinkFile)
         if file_extension != '.shp':
-            feedback.reportError("输出文件的格式错误，请设置为shapefile格式输出。如果是临时文件，请修改Options->Processing->General->Default output vector layer extension的值为shp")
+            feedback.reportError(self.tr(self.UI_ERROR_OUTPUT_FORMAT))
             return {self.OUTPUT: sinkFile}
             
         cmd = [sdk_exe, 
@@ -256,7 +306,7 @@ class SenseRemoteDetectionAlgorithm(QgsProcessingAlgorithm):
         return 'AI Algorithms'
 
     def tr(self, string):
-        return QCoreApplication.translate('Processing', string)
+        return self.TRANS[string][self.locale] 
 
     def createInstance(self):
         return SenseRemoteDetectionAlgorithm()
